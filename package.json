@@ -1,0 +1,28 @@
+{
+  "name": "nodejs-test",
+  "version": "1.0.8",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "npm test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sudhirguliya/nodejs_test.git"
+  },
+  "keywords": [
+    "node",
+    "js",
+    "for",
+    "test"
+  ],
+  "author": "Sudhir Chaudhary",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/sudhirguliya/nodejs_test/issues"
+  },
+  "homepage": "https://github.com/sudhirguliya/nodejs_test#readme",
+  "dependencies": {
+    "express": "^4.16.2"
+  }
+}
