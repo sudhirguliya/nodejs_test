@@ -1,6 +1,6 @@
 {
   "name": "nodejs-test",
-  "version": "1.0.8",
+  "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -23,6 +23,9 @@
   },
   "homepage": "https://github.com/sudhirguliya/nodejs_test#readme",
   "dependencies": {
-    "express": "^4.16.2"
+    "body-parser": "^1.18.2",
+    "express": "^4.16.2",
+    "mongoose": "^5.0.6",
+    "pug": "^2.0.0-rc.4"
   }
 }
