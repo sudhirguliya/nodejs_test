@@ -1,17 +1,57 @@
-var express = require("express");
-var bodyParser = require("body-parser");
-var things 	= require('./things.js');
+var express 	= require("express");
+var bodyParser 	= require("body-parser");
+var mongoose 	= require("mongoose")
+var things 		= require('./things.js');
+//Person 		= require("./model/Person.js");
 var middleware 	= require('./middleware.js');
-var app = express();
+var app 		= express();
 
 app.use(bodyParser.urlencoded({extended : false}))
 app.use(bodyParser.json())
-app.use(express.static('public'))
-
-app.use('/static', express.static('public'));
+//app.use(express.static('public'))
+//app.use('/static', express.static('public'));
 
 app.set('view engine', 'pug')
 app.set('views', './views')
+
+mongoose.connect('mongodb://localhost/my_test')
+var personSchema = mongoose.Schema({
+   name: String,
+   age: Number,
+   nationality: String
+});
+var Person = mongoose.model("Person", personSchema);
+
+app.get('/person', function(req, res){
+   res.render('person');
+}); 
+
+app.post('/person', function(req, res){
+	var personInfo = req.body;
+	console.log(personInfo);
+	if(!personInfo.name || !personInfo.age || personInfo.nationality){
+		res.render('show_message', {
+	        message: "Sorry, you provided worng info", type: "error"
+	    });
+	}else{
+		var newPerson = new Person({
+			name :personInfo.name,
+			age : personInfo.age,
+			nationality : personInfo.nationality
+		});
+		newPerson.save(function(err, Person){
+			if(err) {
+				res.render('show_message', {
+					message : "Database error", type : "error"
+				});
+			}else{
+				res.render('show_message', {
+	               message: "New person added", type: "success", person: personInfo
+	           	});
+			}
+		});
+	}
+});
 
 app.get('/forms', function(req, res){
    res.render('form');
