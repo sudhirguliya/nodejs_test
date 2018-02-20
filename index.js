@@ -1,4 +1,5 @@
 var express 	= require("express");
+const path 		= require('path');
 var bodyParser 	= require("body-parser");
 var mongoose 	= require("mongoose")
 var things 		= require('./things.js');
@@ -8,8 +9,11 @@ var app 		= express();
 
 app.use(bodyParser.urlencoded({extended : false}))
 app.use(bodyParser.json())
-//app.use(express.static('public'))
-//app.use('/static', express.static('public'));
+
+// Set Public Folder
+app.use(express.static(path.join(__dirname, 'public')));
+
+app.use('/static', express.static('public'));
 
 app.set('view engine', 'pug')
 app.set('views', './views')
@@ -23,34 +27,49 @@ var personSchema = mongoose.Schema({
 var Person = mongoose.model("Person", personSchema);
 
 app.get('/person', function(req, res){
+   Person.find(function(err, response){
+	   	if(err){
+	   		res.render('show_person', {message: "Sorry, Database can not find data",
+	   		type: "error" });
+	   	}else{
+	      //res.json(response);
+	      res.render('show_person', {message: "Show all Person",
+	   		type: "success", responses: response });
+	  	}
+   });
+});
+
+app.get('/add_person', function(req, res){
    res.render('person');
-}); 
+});
 
 app.post('/person', function(req, res){
-	var personInfo = req.body;
-	console.log(personInfo);
-	if(!personInfo.name || !personInfo.age || personInfo.nationality){
-		res.render('show_message', {
-	        message: "Sorry, you provided worng info", type: "error"
-	    });
-	}else{
-		var newPerson = new Person({
-			name :personInfo.name,
-			age : personInfo.age,
-			nationality : personInfo.nationality
-		});
-		newPerson.save(function(err, Person){
-			if(err) {
-				res.render('show_message', {
-					message : "Database error", type : "error"
-				});
-			}else{
-				res.render('show_message', {
-	               message: "New person added", type: "success", person: personInfo
-	           	});
-			}
-		});
-	}
+   var personInfo = req.body;
+   //console.log(personInfo);
+   if(!personInfo.name || !personInfo.age || !personInfo.nationality){
+      res.render('show_message', {
+           message: "Sorry, you provided worng info", type: "error"
+       });
+   }else{
+      var newPerson = new Person({
+         name: personInfo.name,
+         age: personInfo.age,
+         nationality: personInfo.nationality
+      });
+      newPerson.save(function(err, Person){
+      	console.log(Person);
+         if(err)
+            res.render('show_message', {
+               message : "Database error", type : "error"
+            });
+         else
+            res.render('show_message', {
+                  message: "New person added", 
+                  type: "success", person: personInfo, 
+                  savePerson: Person
+               });
+      });
+   }
 });
 
 app.get('/forms', function(req, res){

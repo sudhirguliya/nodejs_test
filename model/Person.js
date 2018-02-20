@@ -6,4 +6,4 @@ var personSchema = new Schema({
 	nationality : String
 });
 
-module.exports = mongoose.model("Person", personSchema);
+//module.exports = mongoose.model("Person", personSchema);

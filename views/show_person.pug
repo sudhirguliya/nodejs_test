@@ -1,0 +1,17 @@
+doctype html
+html
+   head
+      link(rel='stylesheet' href='/bower_components/bootstrap/dist/css/bootstrap.css')
+      title All Person
+   body
+      if(type == "error")
+         h3(style = "color:red") #{message}
+      else
+        each person, index in responses 
+          div.row
+            div.col-sm-2= index + 1 
+            div.col-sm-2= person.name
+            div.col-sm-2= person.age
+            div.col-sm-2= person.nationality
+            div.col-sm-2 
+             a(href="/person/"+person._id)= person._id
