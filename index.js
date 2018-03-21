@@ -1,14 +1,20 @@
 var express 	= require("express");
 const path 		= require('path');
 var bodyParser 	= require("body-parser");
-var mongoose 	= require("mongoose")
+var mongoose 	= require("mongoose");
+var session     = require("express-session");
+var cookieParser = require('cookie-parser');
 var things 		= require('./things.js');
+var signup 		= require('./signup.js');
+var login 		= require('./login.js');
 //Person 		= require("./model/Person.js");
 var middleware 	= require('./middleware.js');
 var app 		= express();
 
 app.use(bodyParser.urlencoded({extended : false}))
 app.use(bodyParser.json())
+app.use(cookieParser());
+app.use(session({secret: "sudhirk"}));
 
 // Set Public Folder
 app.use(express.static(path.join(__dirname, 'public')));
@@ -38,6 +44,29 @@ app.get('/person', function(req, res){
 	  	}
    });
 });
+
+function checkSignIn(req, res,next){
+    if(req.session.user){
+       console.log('Set Session: '+req.session.user)
+       next();     //If session exists, proceed to page
+    } else {
+       var err = new Error("Not logged in!");
+       console.log('Session: '+req.session.user);
+       //res.render('signup', {message: err });
+       next(err);  //Error, trying to access unauthorized page!
+       //res.redirect('/login');
+    }
+ }
+ app.get('/protected_page', checkSignIn, function(req, res){
+    res.render('protected_page', {user_id: req.session.user.user_id,user_name: req.session.user.name })
+ });
+
+ app.get('/logout', function(req, res){
+    req.session.destroy(function(){
+        console.log("user has been logout.");
+    })
+    res.redirect('/login');
+ })
 
 app.get('/add_person', function(req, res){
    res.render('person');
@@ -107,7 +136,8 @@ app.all('/all', function(req, res){
 	res.send("Hello World All '/hello'!\n");
 });
 
-
+app.use('/signup', signup);
+app.use('/login', login);
 app.use('/things', things);
 app.use('/middleware', middleware);
 
@@ -116,6 +146,12 @@ app.use('/middleware', middleware);
 app.get('*', function(req, res){
 	res.send('Sorry, this is invalid url.')
 })
+
+app.use('/protected_page', function(err, req, res, next){
+    console.log(err);
+       //User should be authenticated! Redirect him to log in.
+       res.redirect('/login');
+    });
 
 app.listen(3000);
 console.log("server started at 3000 port");
